@@ -1,0 +1,39 @@
+CREATE DATABASE recipe_jdbc;
+
+USE recipe_jdbc;
+
+CREATE TABLE ingredient (
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE recipe (
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+recipe_name VARCHAR(50) NOT NULL,
+prep_time INT NOT NULL,
+cook_time INT NOT NULL,
+difficulty float NOT NULL
+);
+
+CREATE TABLE ingredient_recipe (
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+id_ingredient INT NOT NULL,
+id_recipe INT NOT NULL,
+quantity FLOAT NOT NULL,
+FOREIGN KEY (id_ingredient) REFERENCES ingredient(id) ON DELETE CASCADE,
+FOREIGN KEY (id_recipe) REFERENCES recipe(id) ON DELETE CASCADE
+);
+
+CREATE TABLE comments (
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+text_comment VARCHAR(250) NOT NULL,
+id_recipe INT NOT NULL,
+FOREIGN KEY (id_recipe) REFERENCES recipe(id) ON DELETE CASCADE
+);
+
+CREATE TABLE step (
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+text_step VARCHAR(250),
+id_recipe INT NOT NULL,
+FOREIGN KEY (id_recipe) REFERENCES recipe(id) ON DELETE CASCADE
+);
