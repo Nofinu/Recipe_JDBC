@@ -4,11 +4,16 @@ package dao;
 import jdk.jshell.spi.ExecutionControl;
 import model.Ingredient;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
 public class IngredientDAO extends BaseDAO<Ingredient> {
+
+    public IngredientDAO(Connection _connection) {
+        super(_connection);
+    }
 
     @Override
     public boolean save(Ingredient element) throws SQLException {
@@ -68,19 +73,7 @@ public class IngredientDAO extends BaseDAO<Ingredient> {
     }
 
     @Override
-    public List<Ingredient> findAllByRecipeId(int recipeId) throws SQLException {
-        List<Ingredient> ingredients = null;
-        request = "SELECT i.id as ingredientId,i.name as ingredientName,ir.quantity as quantity FROM ingredient as i INNER JOIN ingredient_recipe as ir on ir.id_ingredient = i.id WHERE ir.id_recipe = ?";
-        statement = _connection.prepareStatement(request);
-        statement.setInt(1,recipeId);
-        resultSet = statement.executeQuery();
-        while (resultSet.next()){
-            ingredients.add(Ingredient.builder()
-                    .name(resultSet.getString("ingredientName"))
-                    .id(resultSet.getInt("ingredientId"))
-                    .quantity(resultSet.getString("quantity"))
-                    .build());
-        }
-        return null;
+    public List<Ingredient> findAllByRecipeId(int recipeId) throws ExecutionControl.NotImplementedException {
+        throw new ExecutionControl.NotImplementedException("ingredient");
     }
 }

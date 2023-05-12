@@ -5,8 +5,11 @@ import lombok.Builder;
 @Builder
 public class Ingredient {
     private int id;
+    private int idRecipe;
+    private int idIngredientRecipe;
     private String name;
     private String quantity;
+
 
 
 
@@ -32,6 +35,22 @@ public class Ingredient {
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }
+
+    public int getIdRecipe() {
+        return idRecipe;
+    }
+
+    public void setIdRecipe(int idRecipe) {
+        this.idRecipe = idRecipe;
+    }
+
+    public int getIdIngredientRecipe() {
+        return idIngredientRecipe;
+    }
+
+    public void setIdIngredientRecipe(int idIngredientRecipe) {
+        this.idIngredientRecipe = idIngredientRecipe;
     }
 
     @Override

@@ -14,6 +14,10 @@ public abstract class BaseDAO<T> {
     protected String request;
     protected ResultSet resultSet;
 
+    public BaseDAO(Connection _connection) {
+        this._connection = _connection;
+    }
+
     public abstract boolean save (T element) throws ExecutionControl.NotImplementedException,SQLException;
     public abstract boolean delete(T element)throws ExecutionControl.NotImplementedException,SQLException;
     public abstract boolean update(T element)throws ExecutionControl.NotImplementedException,SQLException;

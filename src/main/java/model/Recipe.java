@@ -13,7 +13,7 @@ public class Recipe {
     private String name;
     private int prepTime;
     private int cookTime;
-    private float Difficulty;
+    private float difficulty;
     private List<Ingredient> ingredients;
     private List<Step> steps;
     private List<Comment> comments;
@@ -25,7 +25,7 @@ public class Recipe {
                 ", name='" + name + '\'' +
                 ", prepTime=" + prepTime +
                 ", cookTime=" + cookTime +
-                ", Difficulty=" + Difficulty +
+                ", Difficulty=" + difficulty +
                 ", ingredients=" + ingredients +
                 ", steps=" + steps +
                 ", comments=" + comments +

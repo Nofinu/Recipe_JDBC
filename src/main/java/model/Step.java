@@ -3,7 +3,7 @@ package model;
 public class Step {
     private int id;
     private String textStep;
-    private int idRecipe;
+    private final int idRecipe;
 
     public Step(String textStep,int idRecipe) {
         this.textStep = textStep;
@@ -35,9 +35,6 @@ public class Step {
         return idRecipe;
     }
 
-    public void setIdRecipe(int idRecipe) {
-        this.idRecipe = idRecipe;
-    }
 
     @Override
     public String toString() {
