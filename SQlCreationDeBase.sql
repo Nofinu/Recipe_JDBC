@@ -12,14 +12,14 @@ id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 recipe_name VARCHAR(50) NOT NULL,
 prep_time INT NOT NULL,
 cook_time INT NOT NULL,
-difficulty float NOT NULL
+difficulty INT NOT NULL
 );
 
 CREATE TABLE ingredient_recipe (
 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 id_ingredient INT NOT NULL,
 id_recipe INT NOT NULL,
-quantity FLOAT NOT NULL,
+quantity INT NOT NULL,
 FOREIGN KEY (id_ingredient) REFERENCES ingredient(id) ON DELETE CASCADE,
 FOREIGN KEY (id_recipe) REFERENCES recipe(id) ON DELETE CASCADE
 );
