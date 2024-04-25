@@ -1,24 +1,28 @@
 package org.example.Util.Ihm;
 
 import org.example.Exception.NotFoundException;
+import org.example.Util.Validator;
 import org.example.model.Comment;
 import org.example.model.Recipe;
 import org.example.service.CommentService;
 import org.example.service.RecipeService;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Scanner;
 
 public class IhmComment {
-    private CommentService commentService;
-    private Scanner scanner;
-    private RecipeService recipeService;
+    private final CommentService commentService;
+    private final Scanner scanner;
+    private final RecipeService recipeService;
+    private final Validator<Recipe> recipeValidator;
+    private final Validator<Comment> commentValidator;
 
     public IhmComment (Scanner scanner){
         this.scanner = scanner;
         commentService = new CommentService();
         recipeService = new RecipeService();
+        recipeValidator = new Validator<>(scanner);
+        commentValidator = new Validator<>(scanner);
     }
 
     public void start (){
@@ -39,91 +43,46 @@ public class IhmComment {
                 default:
                     return;
             }
-
-        }while (entry != 0);
+        }while (true);
     }
 
     private void addCommentToRecipe (){
         System.out.println("-- Add comment to recipe --");
-
-        boolean SelectRecipe = true;
-        while (SelectRecipe){
-            System.out.println("Recipe Id :");
-            int recipeId = scanner.nextInt();
-            scanner.nextLine();
-            try{
-                Recipe recipeFound = recipeService.findRecipeById(recipeId);
-                System.out.println("Add Comment to ");
-                recipeFound.showRecipe(false,false);
-                System.out.println("? y/n");
-                String entryValidComment = scanner.nextLine();
-                if (entryValidComment.toLowerCase().contains("y")){
-                        boolean addComment = true;
-                        while (addComment){
-                            System.out.println("- Text for the comment :");
-                            String commentStr = scanner.nextLine();
-
-                            System.out.println(MessageFormat.format("Add : \n{0} \n? y/n",commentStr));
-                            String entryValidIngredient = scanner.nextLine();
-                            if (entryValidIngredient.toLowerCase().contains("y")){
-
-                                commentService.addComment(commentStr,recipeId);
-
-                                addComment = false;
-                            }else if(entryValidIngredient.toLowerCase().contains("n")){
-                                System.out.println("Add cancel");
-                                addComment = false;
-                            }else{
-                                System.out.println("Please enter y (Yes) or n (No)");
-                            }
-                        }
-                    SelectRecipe = false;
-                }else if(entryValidComment.toLowerCase().contains("n")){
-                    System.out.println("Add cancel");
-                    SelectRecipe = false;
-                }else{
-                    System.out.println("Please enter y (Yes) or n (No)");
+        System.out.println("Recipe Id :");
+        int recipeId = scanner.nextInt();
+        scanner.nextLine();
+        try{
+            Recipe recipeFound = recipeService.findById(recipeId);
+            if (recipeValidator.validateRecipe(recipeFound,"Add Comment to ",false,false)){
+                System.out.println("- Text for the comment :");
+                String commentStr = scanner.nextLine();
+                Comment comment = new Comment(commentStr,recipeId);
+                if (commentValidator.validate(comment,"Add ")){
+                    commentService.addComment(commentStr,recipeId);
+                    System.out.println("Comment add");
                 }
-            }catch(NotFoundException ex){
-                System.out.println("Recipe not found at id :"+ recipeId);
             }
+        }catch(NotFoundException ex){
+            System.out.println("Recipe not found at id :"+ recipeId);
         }
     }
 
     public void showAllCommentForRecipe (){
-        System.out.println("-- Add comment to recipe --");
-
-        boolean SelectRecipe = true;
-        while (SelectRecipe){
-            System.out.println("Recipe Id :");
-            int recipeId = scanner.nextInt();
-            scanner.nextLine();
-            try{
-                Recipe recipeFound = recipeService.findRecipeById(recipeId);
-                System.out.println("Show all Comment from ");
-                recipeFound.showRecipe(false,false);
-                System.out.println("? y/n");
-                String entryValidComment = scanner.nextLine();
-                if (entryValidComment.toLowerCase().contains("y")){
-                    List<Comment> comments = commentService.findAllByRecipeId(recipeId);
-
-                    System.out.println("- comments :");
-
-                    for(Comment comment : comments){
-                        System.out.println(comment.getTextComment());
-                    }
-
-                    SelectRecipe = false;
-                }else if(entryValidComment.toLowerCase().contains("n")){
-                    System.out.println("Show cancel");
-                    SelectRecipe = false;
-                }else{
-                    System.out.println("Please enter y (Yes) or n (No)");
+    System.out.println("-- Add comment to recipe --");
+        System.out.println("Recipe Id :");
+        int recipeId = scanner.nextInt();
+        scanner.nextLine();
+        try{
+            Recipe recipeFound = recipeService.findById(recipeId);
+            if (recipeValidator.validateRecipe(recipeFound,"Show all Comment from",false,false)){
+                List<Comment> comments = commentService.findAllByRecipeId(recipeId);
+                System.out.println("- comments :");
+                for(Comment comment : comments){
+                    System.out.println(comment.getTextComment());
                 }
-            }catch(NotFoundException ex){
-                System.out.println("Recipe not found at id :"+ recipeId);
             }
+        }catch(NotFoundException ex){
+            System.out.println("Recipe not found at id :"+ recipeId);
         }
     }
-
 }

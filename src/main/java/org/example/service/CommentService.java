@@ -6,7 +6,7 @@ import org.example.model.Comment;
 import java.sql.SQLException;
 import java.util.List;
 
-public class CommentService {
+public class CommentService implements IService{
     private final CommentDAO commentDAO;
 
     public CommentService() {
@@ -60,7 +60,8 @@ public class CommentService {
         }
     }
 
-    public Comment findCommentById(int id) {
+    @Override
+    public Comment findById(int id) {
         try {
             return commentDAO.findById(id);
         } catch (SQLException e) {

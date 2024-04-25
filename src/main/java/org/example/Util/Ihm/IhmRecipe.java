@@ -1,10 +1,10 @@
 package org.example.Util.Ihm;
 
 import org.example.Exception.NotFoundException;
+import org.example.Util.Validator;
 import org.example.model.Recipe;
 import org.example.service.RecipeService;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Scanner;
 
@@ -13,12 +13,14 @@ public class IhmRecipe {
     private final Scanner scanner;
     private final IhmIngredientRecipe ihmIngredientRecipe;
     private final IhmStep ihmStep;
+    private final Validator<Recipe> recipeValidator;
 
     public IhmRecipe (Scanner scanner){
         this.scanner = scanner;
         recipeService = new RecipeService();
         ihmIngredientRecipe = new IhmIngredientRecipe(scanner);
         ihmStep = new IhmStep(scanner);
+        recipeValidator = new Validator<>(scanner);
     }
 
     public void start (){
@@ -55,24 +57,19 @@ public class IhmRecipe {
                 default:
                     return;
             }
-
-        }while (entry != 0);
+        }while (true);
     }
 
     private void createRecipe (){
         System.out.println("-- Create Recipe --");
         System.out.println("Enter recipe name :");
         String name = scanner.nextLine();
-
         System.out.println("Enter Preparation time for the recipe (in minutes)");
         int prepTime = scanner.nextInt();
         scanner.nextLine();
-
         System.out.println("Enter cooking time for the recipe (in minutes)");
         int cookTime = scanner.nextInt();
         scanner.nextLine();
-
-
         boolean entryIsValidNotvalid = true;
         int difficulty = 0;
         while (entryIsValidNotvalid){
@@ -83,7 +80,6 @@ public class IhmRecipe {
                 entryIsValidNotvalid = false;
             }
         }
-
         if(recipeService.addRecipe(name,prepTime,cookTime,difficulty)){
             System.out.println("Recipe Add");
         }else{
@@ -97,23 +93,10 @@ public class IhmRecipe {
         int id = scanner.nextInt();
         scanner.nextLine();
         try{
-            Recipe recipeFound = recipeService.findRecipeById(id);
-            boolean deleteNotFInish = true;
-            while (deleteNotFInish){
-                System.out.println("Delete : ");
-                recipeFound.showRecipe(false,false);
-                System.out.println(" ? y/n");
-                String entryValid = scanner.nextLine();
-                if (entryValid.toLowerCase().contains("y")){
-                    recipeService.deleteRecipe(id);
-                    System.out.println("Recipe Delete");
-                    deleteNotFInish = false;
-                }else if(entryValid.toLowerCase().contains("n")){
-                    System.out.println("Delete cancel");
-                    deleteNotFInish = false;
-                }else{
-                    System.out.println("Please enter y (Yes) or n (No)");
-                }
+            Recipe recipeFound = recipeService.findById(id);
+            if (recipeValidator.validateRecipe(recipeFound,"Delete : ",false,false)){
+                recipeService.deleteRecipe(id);
+                System.out.println("Recipe Delete");
             }
         }catch (NotFoundException ex){
             System.out.println("Recipe not found");
@@ -126,26 +109,17 @@ public class IhmRecipe {
         int id = scanner.nextInt();
         scanner.nextLine();
         try{
-            Recipe recipeFound = recipeService.findRecipeById(id);
-            boolean updateNotFinish = true;
-            while (updateNotFinish){
-                System.out.println("Update : ");
-                recipeFound.showRecipe(false ,false);
-                System.out.println("? y/n");
-                String entryValid = scanner.nextLine();
-                if (entryValid.toLowerCase().contains("y")){
+            Recipe recipeFound = recipeService.findById(id);
 
+                if (recipeValidator.validateRecipe(recipeFound,"Delete : ",false,false)){
                     System.out.println("New name for : " + recipeFound.getName());
                     String name = scanner.nextLine();
-
                     System.out.println("New preparation time, current preparation time : " + recipeFound.getPrepTime());
                     int prepTime = scanner.nextInt();
                     scanner.nextLine();
-
                     System.out.println("New cooking time, current cooking time : " + recipeFound.getCookTime());
                     int cookTime = scanner.nextInt();
                     scanner.nextLine();
-
                     boolean entryIsValidNotvalid = true;
                     int difficulty = 0;
                     while (entryIsValidNotvalid){
@@ -156,35 +130,22 @@ public class IhmRecipe {
                             entryIsValidNotvalid = false;
                         }
                     }
-
                     recipeService.editRecipe(id,name,prepTime,cookTime,difficulty);
                     System.out.println("Recipe Update");
-                    updateNotFinish = false;
-                }else if(entryValid.toLowerCase().contains("n")){
-                    System.out.println("Update cancel");
-                    updateNotFinish = false;
-                }else{
-                    System.out.println("Please enter y (Yes) or n (No)");
                 }
-            }
         }catch (NotFoundException ex){
-            System.out.println("Ingredient not found");
+            System.out.println("Recipe not found");
         }
     }
 
     public void findAllRecipe (){
         List<Recipe> recipes = recipeService.findAllRecipe();
         System.out.println("-- Recipes --");
-
         System.out.println();
         for(Recipe recipe : recipes){
-
             recipe.showRecipe(false,false);
             System.out.println();
         }
     }
-
-
-
 }
 

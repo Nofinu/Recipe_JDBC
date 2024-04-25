@@ -7,7 +7,7 @@ import org.example.model.Recipe;
 import java.sql.SQLException;
 import java.util.List;
 
-public class RecipeService {
+public class RecipeService implements IService<Recipe> {
     private final RecipeDAO recipeDAO;
 
     public RecipeService() {
@@ -72,7 +72,8 @@ public class RecipeService {
         }
     }
 
-    public Recipe findRecipeById(int id) throws NotFoundException {
+    @Override
+    public Recipe findById(int id) throws NotFoundException {
         try {
             Recipe recipeFound = recipeDAO.findById(id);
             if(recipeFound != null){

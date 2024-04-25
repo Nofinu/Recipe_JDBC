@@ -7,7 +7,7 @@ import org.example.model.Ingredient;
 import java.sql.SQLException;
 import java.util.List;
 
-public class IngredientService {
+public class IngredientService implements IService<Ingredient> {
     private final IngredientDAO ingredientDAO;
 
     public IngredientService() {
@@ -61,7 +61,8 @@ public class IngredientService {
         }
     }
 
-    public Ingredient findIngredientById(int id) throws NotFoundException {
+    @Override
+    public Ingredient findById(int id) throws NotFoundException {
         try {
             Ingredient ingredientFound = ingredientDAO.findById(id);
             if(ingredientFound != null){

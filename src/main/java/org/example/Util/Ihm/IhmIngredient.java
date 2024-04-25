@@ -2,20 +2,23 @@ package org.example.Util.Ihm;
 
 import org.example.Exception.NotFoundException;
 import org.example.Util.IngredientTable;
+import org.example.Util.Validator;
 import org.example.model.Ingredient;
 import org.example.service.IngredientService;
 
-import java.text.MessageFormat;
+
 import java.util.List;
 import java.util.Scanner;
 
 public class IhmIngredient {
-    private IngredientService ingredientService;
-    private Scanner scanner;
+    private final IngredientService ingredientService;
+    private final Scanner scanner;
+    private final Validator<Ingredient> validator;
 
     public IhmIngredient (Scanner scanner){
         this.scanner = scanner;
         ingredientService = new IngredientService();
+        validator = new Validator<>(scanner);
     }
 
     public void start (){
@@ -45,7 +48,7 @@ public class IhmIngredient {
                     return;
             }
 
-        }while (entry != 0);
+        }while (true);
     }
 
     private void createIngredient (){
@@ -66,21 +69,11 @@ public class IhmIngredient {
         int id = scanner.nextInt();
         scanner.nextLine();
         try{
-            Ingredient ingredientFound = ingredientService.findIngredientById(id);
-            boolean deleteNotFInish = true;
-            while (deleteNotFInish){
-                System.out.println(MessageFormat.format("Delete : {0} ? y/n",ingredientFound.toString()));
-                String entryValid = scanner.nextLine();
-                if (entryValid.toLowerCase().contains("y")){
-                    ingredientService.deleteIngredient(id);
-                    System.out.println("Ingredient Delete");
-                    deleteNotFInish = false;
-                }else if(entryValid.toLowerCase().contains("n")){
-                    System.out.println("Delete cancel");
-                    deleteNotFInish = false;
-                }else{
-                    System.out.println("Please enter y (Yes) or n (No)");
-                }
+            Ingredient ingredientFound = ingredientService.findById(id);
+
+            if (validator.validate(ingredientFound, "Delete")){
+                ingredientService.deleteIngredient(id);
+                System.out.println("Ingredient Delete");
             }
         }catch (NotFoundException ex){
             System.out.println("Ingredient not found");
@@ -93,24 +86,13 @@ public class IhmIngredient {
         int id = scanner.nextInt();
         scanner.nextLine();
         try{
-            Ingredient ingredientFound = ingredientService.findIngredientById(id);
-            boolean updateNotFInish = true;
-            while (updateNotFInish){
-                System.out.println(MessageFormat.format("Update : {0} ? y/n",ingredientFound.toString()));
-                String entryValid = scanner.nextLine();
-                if (entryValid.toLowerCase().contains("y")){
+            Ingredient ingredientFound = ingredientService.findById(id);
+                if (validator.validate(ingredientFound,"Update")) {
                     System.out.printf("New name for : " + ingredientFound.getName());
                     String name = scanner.nextLine();
-                    ingredientService.editIngredient(id,name);
+                    ingredientService.editIngredient(id, name);
                     System.out.println("Ingredient Update");
-                    updateNotFInish = false;
-                }else if(entryValid.toLowerCase().contains("n")){
-                    System.out.println("Update cancel");
-                    updateNotFInish = false;
-                }else{
-                    System.out.println("Please enter y (Yes) or n (No)");
                 }
-            }
         }catch (NotFoundException ex){
             System.out.println("Ingredient not found");
         }

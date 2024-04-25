@@ -1,26 +1,27 @@
 package org.example.Util.Ihm;
 
 import org.example.Exception.NotFoundException;
-import org.example.Util.IngredientTable;
-import org.example.model.Ingredient;
+import org.example.Util.Validator;
 import org.example.model.Recipe;
 import org.example.model.Step;
 import org.example.service.RecipeService;
 import org.example.service.StepService;
 
-import java.sql.SQLOutput;
-import java.text.MessageFormat;
 import java.util.Scanner;
 
 public class IhmStep {
     private final StepService stepService;
     private final Scanner scanner;
     private final RecipeService recipeService ;
+    private final Validator<Recipe> recipeValidator;
+    private  final  Validator<Step> stepValidator;
 
     public IhmStep (Scanner scanner){
         this.scanner = scanner;
         stepService = new StepService();
         recipeService = new RecipeService();
+        recipeValidator = new Validator<>(scanner);
+        stepValidator = new Validator<>(scanner);
     }
 
     public void start (){
@@ -49,109 +50,62 @@ public class IhmStep {
     private void addStepToRecipe (){
         System.out.println("-- Add Steps to recipe --");
 
-        boolean SelectRecipe = true;
-        while (SelectRecipe){
-            System.out.println("Recipe Id :");
-            int recipeId = scanner.nextInt();
-            scanner.nextLine();
-            try{
-                Recipe recipeFound = recipeService.findRecipeById(recipeId);
-                System.out.println("Add Steps to ");
-                recipeFound.showRecipe(false,true);
-                System.out.println("? y/n");
-                String entryValidRecipe = scanner.nextLine();
-                if (entryValidRecipe.toLowerCase().contains("y")){
-                    System.out.println("How many steps would you add ?");
-                    int nbrIngredient = scanner.nextInt();
-                    scanner.nextLine();
+        System.out.println("Recipe Id :");
+        int recipeId = scanner.nextInt();
+        scanner.nextLine();
+        try{
+            Recipe recipeFound = recipeService.findById(recipeId);
+            if (recipeValidator.validateRecipe(recipeFound,"Add Steps to ",false,true)){
+                System.out.println("How many steps would you add ?");
+                int nbrIngredient = scanner.nextInt();
+                scanner.nextLine();
 
-                    for (int i =0; i< nbrIngredient ; i++){
-                        System.out.println("- add step n° "+ (i+1));
+                for (int i =0; i< nbrIngredient ; i++){
+                    System.out.println("- add step n° "+ (i+1));
 
-                        boolean addStep = true;
-                        while (addStep){
-                            System.out.println("- Text for the step :");
-                            String stepStr = scanner.nextLine();
+                    System.out.println("- Text for the step :");
+                    String stepStr = scanner.nextLine();
+                    Step step = new Step(stepStr,recipeId);
 
-                                System.out.println(MessageFormat.format("Add : \n{0} \n? y/n",stepStr));
-                                String entryValidIngredient = scanner.nextLine();
-                                if (entryValidIngredient.toLowerCase().contains("y")){
+                    if (stepValidator.validate(step,"Add")){
 
-                                    stepService.addStep(stepStr,recipeId);
+                        stepService.addStep(stepStr,recipeId);
 
-                                    addStep = false;
-                                }else if(entryValidIngredient.toLowerCase().contains("n")){
-                                    System.out.println("Add cancel");
-                                    addStep = false;
-                                }else{
-                                    System.out.println("Please enter y (Yes) or n (No)");
-                                }
-                        }
+
                     }
-                    SelectRecipe = false;
-                }else if(entryValidRecipe.toLowerCase().contains("n")){
-                    System.out.println("Add cancel");
-                    SelectRecipe = false;
-                }else{
-                    System.out.println("Please enter y (Yes) or n (No)");
                 }
-            }catch(NotFoundException ex){
-                System.out.println("Recipe not found at id :"+ recipeId);
             }
+        }catch(NotFoundException ex){
+            System.out.println("Recipe not found at id :"+ recipeId);
         }
     }
+
 
     private void removeStepFromRecipe (){
         System.out.println("-- Remove step from recipe --");
 
-        boolean SelectRecipe = true;
-        while (SelectRecipe){
-            System.out.println("Recipe Id :");
-            int recipeId = scanner.nextInt();
-            scanner.nextLine();
-            try{
-                Recipe recipeFound = recipeService.findRecipeById(recipeId);
-                System.out.println("Remove step from ");
-                recipeFound.showRecipe(false,true);
-                System.out.println("? y/n");
-                String entryValidRecipe = scanner.nextLine();
-                if (entryValidRecipe.toLowerCase().contains("y")){
+        System.out.println("Recipe Id :");
+        int recipeId = scanner.nextInt();
+        scanner.nextLine();
+        try{
+            Recipe recipeFound = recipeService.findById(recipeId);
+            if (recipeValidator.validateRecipe(recipeFound,"Remove step from ",false,true)){
 
-                    boolean RemoveStep = true;
-                    while (RemoveStep){
-                        System.out.println("\nStep Id:");
-                        int stepId = scanner.nextInt();
-                        scanner.nextLine();
-                        try{
-                            Step step = stepService.findStepById(stepId);
-                            System.out.println(MessageFormat.format("Remove : \n{0} \n? y/n",step.getTextStep()));
-                            String entryValidStep = scanner.nextLine();
-                            if (entryValidStep.toLowerCase().contains("y")){
-
-                                stepService.deleteStep(stepId);
-
-                                RemoveStep = false;
-                            }else if(entryValidStep.toLowerCase().contains("n")){
-                                System.out.println("Remove cancel");
-                                RemoveStep = false;
-                            }else{
-                                System.out.println("Please enter y (Yes) or n (No)");
-                            }
-                        }catch(NotFoundException ex){
-                            System.out.println("Ingredient not found at id :"+ stepId);
-                        }
-
+                System.out.println("\nStep Id:");
+                int stepId = scanner.nextInt();
+                scanner.nextLine();
+                try{
+                    Step step = stepService.findById(stepId);
+                    if (stepValidator.validate(step,"Remove")){
+                        stepService.deleteStep(stepId);
+                        System.out.println(step.getTextStep() + " Deleted");
                     }
-                    SelectRecipe = false;
-                }else if(entryValidRecipe.toLowerCase().contains("n")){
-                    System.out.println("Remove cancel");
-                    SelectRecipe = false;
-                }else{
-                    System.out.println("Please enter y (Yes) or n (No)");
+                }catch(NotFoundException ex){
+                    System.out.println("Ingredient not found at id :"+ stepId);
                 }
-            }catch(NotFoundException ex){
-                System.out.println("Recipe not found at id :"+ recipeId);
             }
+        }catch(NotFoundException ex){
+            System.out.println("Recipe not found at id :"+ recipeId);
         }
     }
 

@@ -3,12 +3,13 @@ package org.example.service;
 
 import org.example.Exception.NotFoundException;
 import org.example.dao.StepDAO;
+import org.example.model.Recipe;
 import org.example.model.Step;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class StepService {
+public class StepService implements IService<Step> {
     private final StepDAO stepDAO;
 
     public StepService() {
@@ -62,7 +63,8 @@ public class StepService {
         }
     }
 
-    public Step findStepById(int id) throws NotFoundException {
+    @Override
+    public Step findById(int id) throws NotFoundException {
         try {
             Step stepfound = stepDAO.findById(id);
             if(stepfound != null){
