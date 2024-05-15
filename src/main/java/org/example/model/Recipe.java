@@ -2,11 +2,10 @@ package org.example.model;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.example.Util.IngredientTable;
+import org.example.Util.Table;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 @Builder
 @Data
@@ -19,14 +18,16 @@ public class Recipe {
     private List<Ingredient> ingredients;
     private List<Step> steps;
     private List<Comment> comments;
+    private Categorie categorie;
 
     public void showRecipe (boolean withIngredientId,boolean withStepId){
         System.out.println("Recipe : "+name + "     Id : "+ id);
         System.out.println("Preparation Time : "+prepTime);
         System.out.println("Cooking time : "+cookTime);
+        System.out.println("Categorie : "+ categorie.getName());
         switch (difficulty){
             case 1:
-                System.out.println("Difficulty : "+Difficulty.Easy);
+                System.out.println("Difficulty2 : "+Difficulty.Easy);
                 break;
             case 2:
                 System.out.println("Difficulty : "+Difficulty.Medium);
@@ -36,7 +37,8 @@ public class Recipe {
                 break;
         }
         if(ingredients != null && !ingredients.isEmpty()){
-            IngredientTable.table(ingredients,withIngredientId);
+            List<BaseShowMethod> baseIngredient = new ArrayList<>(ingredients);
+            Table.table(baseIngredient,withIngredientId);
         }
 
         if(steps != null && !steps.isEmpty()){

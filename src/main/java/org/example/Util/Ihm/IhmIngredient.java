@@ -1,12 +1,14 @@
 package org.example.Util.Ihm;
 
 import org.example.Exception.NotFoundException;
-import org.example.Util.IngredientTable;
+import org.example.Util.Table;
 import org.example.Util.Validator;
+import org.example.model.BaseShowMethod;
 import org.example.model.Ingredient;
 import org.example.service.IngredientService;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -99,9 +101,8 @@ public class IhmIngredient {
     }
 
     public void findAllIngredient (){
-        List<Ingredient> ingredients = ingredientService.findAllIngredient();
+        List<BaseShowMethod> ingredients = new ArrayList<>(ingredientService.findAllIngredient());
         System.out.println("-- Ingredients --");
-
-        IngredientTable.table(ingredients,false);
+        Table.table(ingredients,false);
     }
 }

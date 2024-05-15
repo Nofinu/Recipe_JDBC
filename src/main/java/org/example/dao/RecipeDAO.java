@@ -13,22 +13,25 @@ import java.util.List;
 public class RecipeDAO extends BaseDAO<Recipe> {
     private IngredienRecipesDAO ingredienRecipesDAO;
     private  StepDAO stepDAO;
+    private  CategorieDAO categorieDAO;
 
     public RecipeDAO() {
         ingredienRecipesDAO = new IngredienRecipesDAO();
         stepDAO = new StepDAO();
+        categorieDAO = new CategorieDAO();
     }
 
     @Override
     public boolean save(Recipe element) throws SQLException {
         try {
             _connection = DatabaseManager.getConnection();
-            request = "INSERT INTO recipe(recipe_name,prep_time,cook_time,difficulty) VALUES (?,?,?,?)";
+            request = "INSERT INTO recipe(recipe_name,prep_time,cook_time,difficulty,id_categorie) VALUES (?,?,?,?,?)";
             statement = _connection.prepareStatement(request, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, element.getName());
             statement.setInt(2, element.getPrepTime());
             statement.setInt(3, element.getCookTime());
             statement.setFloat(4, element.getDifficulty());
+            statement.setInt(5,element.getCategorie().getId());
             int rows = statement.executeUpdate();
             resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -66,13 +69,14 @@ public class RecipeDAO extends BaseDAO<Recipe> {
     public boolean update(Recipe element) throws SQLException {
         try {
             _connection = DatabaseManager.getConnection();
-            request = "UPDATE recipe SET recipe_name = ?,prep_time = ?,cook_time = ?,difficulty = ? WHERE id = ?";
+            request = "UPDATE recipe SET recipe_name = ?,prep_time = ?,cook_time = ?,difficulty = ?, id_categorie = ? WHERE id = ?";
             statement = _connection.prepareStatement(request);
             statement.setString(1, element.getName());
             statement.setInt(2, element.getPrepTime());
             statement.setInt(3, element.getCookTime());
             statement.setInt(4, element.getDifficulty());
-            statement.setInt(5,element.getId());
+            statement.setInt(5,element.getCategorie().getId());
+            statement.setInt(6,element.getId());
             int rows = statement.executeUpdate();
             return rows == 1;
         }
@@ -88,7 +92,7 @@ public class RecipeDAO extends BaseDAO<Recipe> {
     public Recipe findById(int id) throws SQLException {
         try {
             _connection = DatabaseManager.getConnection();
-            request = "SELECT recipe_name,prep_time,cook_time,difficulty FROM recipe WHERE id = ?";
+            request = "SELECT recipe_name,prep_time,cook_time,difficulty,id_categorie FROM recipe WHERE id = ?";
             statement = _connection.prepareStatement(request);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -101,6 +105,7 @@ public class RecipeDAO extends BaseDAO<Recipe> {
                         .difficulty(resultSet.getInt("difficulty"))
                         .ingredients(ingredienRecipesDAO.findAllByRecipeId(id))
                         .steps(stepDAO.findAllByRecipeId(id))
+                        .categorie(categorieDAO.findById(resultSet.getInt("id_categorie")))
                         .build();
             }
             return null;
@@ -130,6 +135,7 @@ public class RecipeDAO extends BaseDAO<Recipe> {
                         .difficulty(resultSet.getInt("difficulty"))
                         .ingredients(ingredienRecipesDAO.findAllByRecipeId(resultSet.getInt("id")))
                         .steps(stepDAO.findAllByRecipeId(resultSet.getInt("id")))
+                        .categorie(categorieDAO.findById(resultSet.getInt("id_categorie")))
                         .build());
             }
             return recipes;

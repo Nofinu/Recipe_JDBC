@@ -7,7 +7,7 @@ import java.text.MessageFormat;
 
 @Builder
 @Data
-public class Ingredient {
+public class Ingredient extends BaseShowMethod {
     private int id;
     private int idRecipe;
     private int idIngredientRecipe;

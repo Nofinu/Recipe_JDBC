@@ -1,10 +1,17 @@
 package org.example.Util.Ihm;
 
 import org.example.Exception.NotFoundException;
+import org.example.Util.Table;
 import org.example.Util.Validator;
+import org.example.dao.CategorieDAO;
+import org.example.model.BaseShowMethod;
+import org.example.model.Categorie;
 import org.example.model.Recipe;
+import org.example.service.CategorieService;
 import org.example.service.RecipeService;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,6 +21,8 @@ public class IhmRecipe {
     private final IhmIngredientRecipe ihmIngredientRecipe;
     private final IhmStep ihmStep;
     private final Validator<Recipe> recipeValidator;
+    private final Validator<Categorie> categorieValidator;
+    private final CategorieService categorieService;
 
     public IhmRecipe (Scanner scanner){
         this.scanner = scanner;
@@ -21,6 +30,8 @@ public class IhmRecipe {
         ihmIngredientRecipe = new IhmIngredientRecipe(scanner);
         ihmStep = new IhmStep(scanner);
         recipeValidator = new Validator<>(scanner);
+        categorieService = new CategorieService();
+        categorieValidator = new Validator<>(scanner);
     }
 
     public void start (){
@@ -80,11 +91,32 @@ public class IhmRecipe {
                 entryIsValidNotvalid = false;
             }
         }
-        if(recipeService.addRecipe(name,prepTime,cookTime,difficulty)){
+
+        entryIsValidNotvalid = true;
+        Categorie categorie = null;
+        while (entryIsValidNotvalid){
+            try{
+                int categorie_id;
+                List<BaseShowMethod> categories = new ArrayList<>(categorieService.findAllICategorie());
+                Table.table(categories,true);
+                System.out.println("Categorie Id :");
+                categorie_id = scanner.nextInt();
+                scanner.nextLine();
+                categorie = categorieService.findById(categorie_id);
+                if(categorieValidator.validate(categorie,"Add :"))
+                    entryIsValidNotvalid = false;
+            }catch(NotFoundException ex){
+            System.out.println("Enter a valid Id.");
+            }
+        }
+
+        if(recipeService.addRecipe(name,prepTime,cookTime,difficulty, categorie)){
             System.out.println("Recipe Add");
         }else{
             System.out.println("Error when adding Recipe");
         }
+
+
     }
 
     private void deleteRecipe (){
@@ -130,7 +162,24 @@ public class IhmRecipe {
                             entryIsValidNotvalid = false;
                         }
                     }
-                    recipeService.editRecipe(id,name,prepTime,cookTime,difficulty);
+
+                    entryIsValidNotvalid = true;
+                    Categorie categorie = null;
+                    while (entryIsValidNotvalid){
+                        int categorie_id = 0;
+                        System.out.println("Categorie Id :");
+                        categorie_id = scanner.nextInt();
+                        scanner.nextLine();
+                        try{
+                            categorie = categorieService.findById(categorie_id);
+                            if(categorieValidator.validate(categorie,"Add :"))
+                                entryIsValidNotvalid = false;
+
+                        } catch (NotFoundException ex){
+                            System.out.println("Enter a valid Id.");
+                        }
+                    }
+                    recipeService.editRecipe(id,name,prepTime,cookTime,difficulty,categorie);
                     System.out.println("Recipe Update");
                 }
         }catch (NotFoundException ex){

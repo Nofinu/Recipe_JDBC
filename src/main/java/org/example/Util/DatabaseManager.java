@@ -14,13 +14,6 @@ public class DatabaseManager {
     private DatabaseManager (){
 
     }
-
-    public static DatabaseManager getDatabaseManager (){
-        if(instance == null)
-            instance = new DatabaseManager();
-        return instance;
-    }
-
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URI,USER,PASSWORD);
     }

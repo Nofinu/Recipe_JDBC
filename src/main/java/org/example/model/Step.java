@@ -21,9 +21,7 @@ public class Step {
 
     @Override
     public String toString() {
-        return "Step{" +
-                "id=" + id +
-                ", testStep='" + textStep + '\'' +
-                '}';
+        return "id : " + id +
+                "   " + textStep + '\'';
     }
 }

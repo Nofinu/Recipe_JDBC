@@ -1,14 +1,17 @@
 package org.example.Util.Ihm;
 
 import org.example.Exception.NotFoundException;
-import org.example.Util.IngredientTable;
+import org.example.Util.Table;
 import org.example.Util.Validator;
+import org.example.model.BaseShowMethod;
 import org.example.model.Ingredient;
 import org.example.model.Recipe;
 import org.example.service.IngredientRecipeService;
 import org.example.service.IngredientService;
 import org.example.service.RecipeService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class IhmIngredientRecipe {
@@ -63,7 +66,8 @@ public class IhmIngredientRecipe {
                 scanner.nextLine();
                 for (int i = 0; i < nbrIngredient; i++) {
                     System.out.println("- add ingredient n° " + (i + 1));
-                    IngredientTable.table(ingredientService.findAllIngredient(), true);
+                    List<BaseShowMethod> baseIngredients = new ArrayList<>(ingredientService.findAllIngredient());
+                    Table.table(baseIngredients, true);
                     System.out.println("\nIngredient Id:");
                     int ingredientId = scanner.nextInt();
                     scanner.nextLine();
